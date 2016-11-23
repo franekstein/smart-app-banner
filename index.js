@@ -37,6 +37,25 @@ var mixins = {
 	}
 };
 
+var versionCompare = function(left, right) {
+    if (typeof left + typeof right != 'stringstring')
+        return false;
+    
+    var a = left.split('.')
+    ,   b = right.split('.')
+    ,   i = 0, len = Math.max(a.length, b.length);
+        
+    for (; i < len; i++) {
+        if ((a[i] && !b[i] && parseInt(a[i]) > 0) || (parseInt(a[i]) > parseInt(b[i]))) {
+            return 1;
+        } else if ((b[i] && !a[i] && parseInt(b[i]) > 0) || (parseInt(a[i]) < parseInt(b[i]))) {
+            return -1;
+        }
+    }
+    
+    return 0;
+}
+
 var SmartBanner = function (options) {
 	var agent = ua(navigator.userAgent);
 	this.options = extend({}, {
@@ -75,7 +94,7 @@ var SmartBanner = function (options) {
 	// - running on standalone mode
 	// - user dismissed banner
 	var unsupported = !this.type;
-	var isMobileSafari = (this.type === 'ios' && agent.browser.name === 'Mobile Safari' && Number(agent.os.version) >= 6);
+	var isMobileSafari = (this.type === 'ios' && agent.browser.name === 'Mobile Safari' && versionCompare(agent.os.version, 6) >= 0);
 	var runningStandAlone = navigator.standalone;
 	var userDismissed = cookie.get('smartbanner-closed');
 	var userInstalled = cookie.get('smartbanner-installed');
